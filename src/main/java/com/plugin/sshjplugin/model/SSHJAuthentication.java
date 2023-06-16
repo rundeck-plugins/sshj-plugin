@@ -1,17 +1,22 @@
 package com.plugin.sshjplugin.model;
 import com.dtolabs.rundeck.plugins.PluginLogger;
+import com.dtolabs.utils.Streams;
 import com.plugin.sshjplugin.SSHJBuilder;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
-import java.io.File;
-import java.io.IOException;
+import net.schmizz.sshj.common.Factory;
+import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
+import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
+import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
+import net.schmizz.sshj.userauth.password.PasswordUtils;
+
+import java.io.*;
 
 public class SSHJAuthentication {
 
     SSHJConnection.AuthenticationType authenticationType;
     String username;
     String password;
-    String privateKeyFile;
+    String privateKeyContent;
     String passphrase;
     PluginLogger logger;
     SSHJConnection connectionParameters;
@@ -28,35 +33,34 @@ public class SSHJAuthentication {
 
         switch (authenticationType) {
             case privateKey:
-                try{
-                    privateKeyFile = connectionParameters.getPrivateKeyPath();
-                    logger.log(3, "Authenticating using private key");
+                logger.log(3, "Authenticating using private key");
 
-                } catch (IOException e) {
-                    logger.log(0, "Failed to get SSH key: " + e.getMessage());
+                String privateKeyPath = connectionParameters.getPrivateKeyStoragePath();
+                try{
+                    privateKeyContent = connectionParameters.getPrivateKeyStorage(privateKeyPath);
+                } catch (Exception e) {
+                    throw new SSHJBuilder.BuilderException("Failed to read SSH Key Storage stored at path: " + privateKeyPath);
                 }
 
                 String passphrasePath = connectionParameters.getPrivateKeyPassphraseStoragePath();
                 try{
                     passphrase = connectionParameters.getPrivateKeyPassphrase(passphrasePath);
-                } catch (IOException e) {
-                    logger.log(0, "Failed to read SSH Passphrase stored at path: " + passphrasePath);
+                } catch (Exception e) {
+                    throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
                 }
 
-                KeyProvider key = null;
-                if (null != privateKeyFile && !"".equals(privateKeyFile)) {
-                    if (!new File(privateKeyFile).exists()) {
-                        throw new SSHJBuilder.BuilderException("SSH Keyfile does not exist: " + privateKeyFile);
-                    }
-                    logger.log(3, "[sshj-debug] Using ssh keyfile: " + privateKeyFile);
-                }
+                KeyFormat format = KeyProviderUtil.detectKeyFileFormat(privateKeyContent,true);
+                FileKeyProvider keys = Factory.Named.Util.create(ssh.getTransport().getConfig().getFileKeyProviderFactories(), format.toString());
+
+                logger.log(3, "[sshj-debug] Using ssh keyfile: " + privateKeyPath);
 
                 if (passphrase == null) {
-                    key = ssh.loadKeys(privateKeyFile);
+                    keys.init(new StringReader(privateKeyContent), null);
                 } else {
-                    key = ssh.loadKeys(privateKeyFile, passphrase);
+                    logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
+                    keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
                 }
-                ssh.authPublickey(username, key);
+                ssh.authPublickey(username, keys);
                 break;
             case password:
                 String passwordPath = connectionParameters.getPasswordStoragePath();
@@ -65,15 +69,11 @@ public class SSHJAuthentication {
                 }
                 try{
                     password = connectionParameters.getPassword(passwordPath);
-                } catch (IOException e) {
-                    logger.log(0, "Failed to read SSH Password stored at path: " + passwordPath);
+                } catch (Exception e) {
+                    throw new SSHJBuilder.BuilderException("Failed to read SSH Password stored at path: " + passwordPath);
                 }
 
-                if (password != null) {
-                    ssh.authPassword(username, password);
-                }else{
-                    throw new SSHJBuilder.BuilderException("SSH password wasn't set, please define a password");
-                }
+                ssh.authPassword(username, password);
                 break;
         }
     }

@@ -256,9 +256,9 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
             sshexec.execute(sshClient);
             success = true;
         } catch (Exception e) {
-            final ExtractFailure extractJschFailure = extractFailure(e, node, commandtimeout, contimeout, context.getFramework());
-            errormsg = extractJschFailure.getErrormsg();
-            failureReason = extractJschFailure.getReason();
+            final ExtractFailure extractFailure = extractFailure(e, node, commandtimeout, contimeout, context.getFramework());
+            errormsg = extractFailure.getErrormsg();
+            failureReason = extractFailure.getReason();
             context.getExecutionListener().log(
                     3,
                     String.format(

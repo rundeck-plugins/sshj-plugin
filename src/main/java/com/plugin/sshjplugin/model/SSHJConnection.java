@@ -21,6 +21,8 @@ public interface SSHJConnection{
 
     InputStream getPrivateKeyStorageData(String path);
 
+    String getPrivateKeyStorage(String path)  throws IOException;
+
     String getPasswordStoragePath();
 
     String getPassword(String path) throws IOException;

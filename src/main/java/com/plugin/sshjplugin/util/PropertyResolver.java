@@ -69,6 +69,22 @@ public class PropertyResolver {
 
     }
 
+    public String getPrivateKeyStorage(String path) throws IOException {
+        //expand properties in path
+        if (path != null && path.contains("${")) {
+            path = DataContextUtils.replaceDataReferencesInString(path, context.getDataContext());
+        }
+        if (null == path) {
+            return null;
+        }
+
+        ResourceMeta contents = context.getStorageTree().getResource(path).getContents();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        contents.writeContent(byteArrayOutputStream);
+        return byteArrayOutputStream.toString();
+
+    }
+
     public String getStoragePath(String property) {
         String path = resolve(property);
 
@@ -83,8 +99,7 @@ public class PropertyResolver {
         ResourceMeta contents = context.getStorageTree().getResource(path).getContents();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         contents.writeContent(byteArrayOutputStream);
-        String password = new String(byteArrayOutputStream.toByteArray());
-        return password;
+        return byteArrayOutputStream.toString();
     }
 
     public String nonBlank(final String input) {
