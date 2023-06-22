@@ -53,6 +53,7 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
             pluginLogger.log(3, "["+getPluginName()+"]  starting session" );
 
             session = ssh.startSession();
+            session.allocateDefaultPTY();
 
             pluginLogger.log(3, "["+getPluginName()+"] setting environments" );
 
@@ -83,6 +84,8 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
                     pluginLogger.log(3, "["+getPluginName()+"]  running sudo with password path  " + sudoPasswordPath );
                 }
                 String sudoPassword = this.getSshjConnection().getSudoPassword(sudoPasswordPath);
+
+                pluginLogger.log(3, "["+getPluginName()+"]  using sudoPassword value of: " + sudoPassword );
 
                 SudoCommand sudoCommandRunner = new SudoCommandBuilder()
                                                     .sudoPromptPattern(this.getSshjConnection().getSudoPromptPattern())
