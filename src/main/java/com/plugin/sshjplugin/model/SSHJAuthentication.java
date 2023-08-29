@@ -35,7 +35,7 @@ public class SSHJAuthentication {
             case privateKey:
                 logger.log(3, "Authenticating using private key");
                 String privateKeyStoragePath = connectionParameters.getPrivateKeyStoragePath();
-                String privateKeyFilePath = connectionParameters.getPrivateKeyFilePath();
+                String privateKeyFileSystemPath = connectionParameters.getPrivateKeyFilePath();
                 String passphrasePath = connectionParameters.getPrivateKeyPassphraseStoragePath();
                 FileKeyProvider keys = null;
 
@@ -62,12 +62,12 @@ public class SSHJAuthentication {
                         keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
                     }
                 }
-                if(privateKeyFilePath!=null){
-                    logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFilePath);
+                if(privateKeyFileSystemPath!=null){
+                    logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFileSystemPath);
                     if (passphrase == null) {
-                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFilePath);
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath);
                     } else {
-                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFilePath, passphrase);
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath, passphrase);
                         logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
                     }
                 }
