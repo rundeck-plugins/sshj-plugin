@@ -59,7 +59,7 @@ public class SSHJConnectionParameters implements SSHJConnection{
 
         }else{
 
-            privateKeyFile = getPrivateKeyfilePath();
+            privateKeyFile = getPrivateKeyFilePath();
             context.getExecutionListener().log(3, "[sshj-debug] Using ssh keyfile: " + privateKeyFile);
         }
 
@@ -96,7 +96,8 @@ public class SSHJConnectionParameters implements SSHJConnection{
         return propertyResolver.getPrivateKeyStorage(path);
     }
 
-    String getPrivateKeyfilePath() {
+    @Override
+    public String getPrivateKeyFilePath() {
         String path = propertyResolver.resolve(SSHJNodeExecutorPlugin.NODE_ATTR_SSH_KEYPATH);
         if (path == null && framework.hasProperty(Constants.SSH_KEYPATH_PROP)) {
             //return default framework level

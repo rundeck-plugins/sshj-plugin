@@ -34,31 +34,42 @@ public class SSHJAuthentication {
         switch (authenticationType) {
             case privateKey:
                 logger.log(3, "Authenticating using private key");
-
-                String privateKeyPath = connectionParameters.getPrivateKeyStoragePath();
-                try{
-                    privateKeyContent = connectionParameters.getPrivateKeyStorage(privateKeyPath);
-                } catch (Exception e) {
-                    throw new SSHJBuilder.BuilderException("Failed to read SSH Key Storage stored at path: " + privateKeyPath);
-                }
-
+                String privateKeyStoragePath = connectionParameters.getPrivateKeyStoragePath();
+                String privateKeyFilePath = connectionParameters.getPrivateKeyFilePath();
                 String passphrasePath = connectionParameters.getPrivateKeyPassphraseStoragePath();
-                try{
-                    passphrase = connectionParameters.getPrivateKeyPassphrase(passphrasePath);
-                } catch (Exception e) {
-                    throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
+                FileKeyProvider keys = null;
+
+                if(passphrasePath!=null){
+                    try{
+                        passphrase = connectionParameters.getPrivateKeyPassphrase(passphrasePath);
+                    } catch (Exception e) {
+                        throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
+                    }
                 }
-
-                KeyFormat format = KeyProviderUtil.detectKeyFileFormat(privateKeyContent,true);
-                FileKeyProvider keys = Factory.Named.Util.create(ssh.getTransport().getConfig().getFileKeyProviderFactories(), format.toString());
-
-                logger.log(3, "[sshj-debug] Using ssh keyfile: " + privateKeyPath);
-
-                if (passphrase == null) {
-                    keys.init(new StringReader(privateKeyContent), null);
-                } else {
-                    logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
-                    keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
+                if(privateKeyStoragePath!=null){
+                    logger.log(3, "[sshj-debug] Using SSH Storage key: " + privateKeyStoragePath);
+                    try{
+                        privateKeyContent = connectionParameters.getPrivateKeyStorage(privateKeyStoragePath);
+                    } catch (Exception e) {
+                        throw new SSHJBuilder.BuilderException("Failed to read SSH Key Storage stored at path: " + privateKeyStoragePath);
+                    }
+                    KeyFormat format = KeyProviderUtil.detectKeyFileFormat(privateKeyContent,true);
+                    keys = Factory.Named.Util.create(ssh.getTransport().getConfig().getFileKeyProviderFactories(), format.toString());
+                    if (passphrase == null) {
+                        keys.init(new StringReader(privateKeyContent), null);
+                    } else {
+                        logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
+                        keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
+                    }
+                }
+                if(privateKeyFilePath!=null){
+                    logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFilePath);
+                    if (passphrase == null) {
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFilePath);
+                    } else {
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFilePath, passphrase);
+                        logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
+                    }
                 }
                 ssh.authPublickey(username, keys);
                 break;

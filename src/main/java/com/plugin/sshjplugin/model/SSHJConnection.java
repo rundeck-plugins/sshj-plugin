@@ -25,6 +25,8 @@ public interface SSHJConnection{
 
     String getPasswordStoragePath();
 
+    String getPrivateKeyFilePath();
+
     String getPassword(String path) throws IOException;
 
     String getSudoPasswordStoragePath();
