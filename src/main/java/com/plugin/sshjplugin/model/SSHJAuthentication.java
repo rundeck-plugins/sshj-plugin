@@ -46,6 +46,15 @@ public class SSHJAuthentication {
                         throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
                     }
                 }
+                if(privateKeyFileSystemPath!=null){
+                    logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFileSystemPath);
+                    if (passphrase == null) {
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath);
+                    } else {
+                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath, passphrase);
+                        logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
+                    }
+                }
                 if(privateKeyStoragePath!=null){
                     logger.log(3, "[sshj-debug] Using SSH Storage key: " + privateKeyStoragePath);
                     try{
@@ -60,15 +69,6 @@ public class SSHJAuthentication {
                     } else {
                         logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
                         keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
-                    }
-                }
-                if(privateKeyFileSystemPath!=null){
-                    logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFileSystemPath);
-                    if (passphrase == null) {
-                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath);
-                    } else {
-                        keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath, passphrase);
-                        logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
                     }
                 }
                 ssh.authPublickey(username, keys);
