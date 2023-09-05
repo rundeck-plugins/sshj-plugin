@@ -39,14 +39,14 @@ public class SSHJAuthentication {
                 String passphrasePath = connectionParameters.getPrivateKeyPassphraseStoragePath();
                 FileKeyProvider keys = null;
 
-                if(passphrasePath!=null){
+                if(passphrasePath != null){
                     try{
                         passphrase = connectionParameters.getPrivateKeyPassphrase(passphrasePath);
                     } catch (Exception e) {
                         throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
                     }
                 }
-                if(privateKeyFileSystemPath!=null){
+                if(privateKeyFileSystemPath != null && privateKeyStoragePath == null){
                     logger.log(3, "[sshj-debug] Using SSH Keyfile: " + privateKeyFileSystemPath);
                     if (passphrase == null) {
                         keys = (FileKeyProvider) ssh.loadKeys(privateKeyFileSystemPath);
@@ -55,7 +55,7 @@ public class SSHJAuthentication {
                         logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
                     }
                 }
-                if(privateKeyStoragePath!=null){
+                if(privateKeyStoragePath != null){
                     logger.log(3, "[sshj-debug] Using SSH Storage key: " + privateKeyStoragePath);
                     try{
                         privateKeyContent = connectionParameters.getPrivateKeyStorage(privateKeyStoragePath);
@@ -75,7 +75,7 @@ public class SSHJAuthentication {
                 break;
             case password:
                 String passwordPath = connectionParameters.getPasswordStoragePath();
-                if(passwordPath!=null){
+                if(passwordPath != null){
                     logger.log(3, "Authenticating using password: " + passwordPath);
                 }
                 try{
