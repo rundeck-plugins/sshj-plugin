@@ -8,9 +8,6 @@ import net.schmizz.sshj.common.Factory
 import net.schmizz.sshj.transport.Transport
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider
 import spock.lang.Specification
-import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
-import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
-import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile
 
 
 class SSHJAuthenticationTest extends Specification {
@@ -62,7 +59,7 @@ class SSHJAuthenticationTest extends Specification {
 
 
 
-   /* def "authenticate with private key Rundeck storage no passphrase"() {
+    def "authenticate with private key Rundeck storage no passphrase"() {
         given:
         String keyStoragePath = "keys/rundeck/storage"
         SSHClient sshClient = Mock(SSHClient){
@@ -96,17 +93,21 @@ class SSHJAuthenticationTest extends Specification {
 
         then:
         true
-    }*/
+    }
 
-
-    public static List <Factory.Named<FileKeyProvider>> providerFactoriesList() {
-        List<Factory.Named<FileKeyProvider>> factories = new ArrayList<>();
-        factories.add(OpenSSHKeyV1KeyFile);
-        factories.add(PKCS8KeyFile);
-        factories.add(OpenSSHKeyFile);
-        factories.add(PuTTYKeyFile);
-
-        return factories;
+    private static List<Factory.Named<FileKeyProvider>> providerFactoriesList() {
+        List<Factory.Named<FileKeyProvider>> namedList = new ArrayList<>();
+        namedList.add(new Factory.Named<FileKeyProvider>(){
+            @Override
+            FileKeyProvider create() {
+                return new OpenSSHKeyV1KeyFile();
+            }
+            @Override
+            String getName() {
+                return "OpenSSHKeyV1KeyFile"
+            }
+        })
+        return namedList;
     }
 
 

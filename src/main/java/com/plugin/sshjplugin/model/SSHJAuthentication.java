@@ -1,6 +1,5 @@
 package com.plugin.sshjplugin.model;
 import com.dtolabs.rundeck.plugins.PluginLogger;
-import com.dtolabs.utils.Streams;
 import com.plugin.sshjplugin.SSHJBuilder;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.Factory;
@@ -64,11 +63,14 @@ public class SSHJAuthentication {
                     }
                     KeyFormat format = KeyProviderUtil.detectKeyFileFormat(privateKeyContent,true);
                     keys = Factory.Named.Util.create(ssh.getTransport().getConfig().getFileKeyProviderFactories(), format.toString());
-                    if (passphrase == null) {
-                        keys.init(new StringReader(privateKeyContent), null);
-                    } else {
-                        logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
-                        keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
+
+                    if(keys != null ){
+                        if (passphrase == null) {
+                            keys.init(new StringReader(privateKeyContent), null);
+                        } else {
+                            logger.log(3, "[sshj-debug] Using Passphrase: " + passphrasePath);
+                            keys.init(new StringReader(privateKeyContent), PasswordUtils.createOneOff(passphrase.toCharArray()));
+                        }
                     }
                 }
                 ssh.authPublickey(username, keys);
