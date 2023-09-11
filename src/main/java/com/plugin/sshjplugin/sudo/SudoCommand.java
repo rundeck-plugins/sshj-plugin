@@ -64,6 +64,8 @@ public class SudoCommand {
 
     public String runSudoCommand(String command) throws IOException {
 
+        logger.log(3, "Entered runSudoCommand");
+
         Expect expect = new ExpectBuilder()
                 .withOutput(outputStream)
                 .withInputs(inputStream, errorStream)
@@ -77,10 +79,13 @@ public class SudoCommand {
                 .withTimeout(30000, TimeUnit.SECONDS)
                 .build();
 
+        logger.log(3, "Looking for pattern :" + PROMPT_PATTERN);
         expect.expect(regexp(PROMPT_PATTERN));
+        
         //expect.sendLine("stty -echo");
         //expect.interact();
 
+        logger.log(3, "Issuing command :" + command);
         expect.sendLine(command);
 
         logger.log(3, "SUDO command enabled");
@@ -90,6 +95,7 @@ public class SudoCommand {
         expect.expect(contains(sudoPromptPattern));
         expect.sendLine(sudoPassword);
 
+        logger.log(3, "Looking for pattern :" + PROMPT_PATTERN);
         expect.expect(regexp(PROMPT_PATTERN));
         expect.sendLine("echo $?");
 
