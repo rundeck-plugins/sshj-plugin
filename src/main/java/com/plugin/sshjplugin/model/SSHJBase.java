@@ -68,6 +68,7 @@ public class SSHJBase {
         int keepAliveCount = sshjConnection.getKeepAliveMaxAlive();
         boolean retry = sshjConnection.isRetryEnabled();
         int retryCount = sshjConnection.getRetryCounter();
+        boolean useSftp = sshjConnection.useSftp();
 
         SSHJAuthentication authentication = new SSHJAuthentication(sshjConnection, pluginLogger);
 
@@ -78,6 +79,7 @@ public class SSHJBase {
         pluginLogger.log(3, "["+getPluginName()+"] keepAliveMaxCount: " + keepAliveCount);
         pluginLogger.log(3, "["+getPluginName()+"] retry: " + retry);
         pluginLogger.log(3, "["+getPluginName()+"] retryCount: " + retryCount);
+        pluginLogger.log(3, "["+getPluginName()+"] useSftp: " + useSftp);
 
         ssh.getTransport().getConfig().setLoggerFactory(new SSHJPluginLoggerFactory(pluginLogger));
         ssh.addHostKeyVerifier(new PromiscuousVerifier());

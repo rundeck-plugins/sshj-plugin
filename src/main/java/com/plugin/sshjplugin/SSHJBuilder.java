@@ -79,7 +79,7 @@ public class SSHJBuilder {
         //Set the local and remote file paths
         //scp.setLocalFile(sourceFolder.getAbsolutePath());
         scp.addFile(sourceFolder);
-
+        scp.setUseSftp(sshConnection.useSftp());
         scp.setTodir(remotePath);
 
     }
@@ -101,6 +101,7 @@ public class SSHJBuilder {
 
         configureSSHBase(nodeentry, sshjConnection, scp, logger);
 
+        scp.setUseSftp(sshjConnection.useSftp());
         //Set the local and remote file paths
         scp.setLocalFile(sourceFile.getAbsolutePath());
         scp.setRemoteTofile(remotepath);

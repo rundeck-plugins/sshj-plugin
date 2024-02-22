@@ -50,6 +50,7 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
 
     public static final String CONFIG_RETRY_ENABLE = "retryEnable";
     public static final String CONFIG_RETRY_COUNTER = "retryCounter";
+    public static final String CONFIG_USE_SFTP = "useSftp";
 
     public static final String PROJ_PROP_PREFIX = "project.";
     public static final String FWK_PROP_PREFIX = "framework.";
@@ -74,6 +75,7 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
 
     public static final String NODE_ATTR_RETRY_COUNTER = "retry-counter";
     public static final String NODE_ATTR_RETRY_ENABLE = "retry-enable";
+    public static final String NODE_ATTR_USE_SFTP = "use-sftp";
 
     public static final String PROJECT_SSH_USER = PROJ_PROP_PREFIX + "ssh.user";
 
@@ -99,6 +101,9 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
     public static final String PROJ_PROP_RETRY_COUNTER = PROJ_PROP_PREFIX + NODE_ATTR_RETRY_COUNTER;
     public static final String FWK_PROP_RETRY_ENABLE = FWK_PROP_PREFIX + NODE_ATTR_RETRY_ENABLE;
     public static final String PROJ_PROP_RETRY_ENABLE = PROJ_PROP_PREFIX + NODE_ATTR_RETRY_ENABLE;
+
+    public static final String FWK_PROP_USE_SFTP = FWK_PROP_PREFIX + NODE_ATTR_USE_SFTP;
+    public static final String PROJ_PROP_USE_SFTP = PROJ_PROP_PREFIX + NODE_ATTR_USE_SFTP;
 
     public static final String SUDO_OPT_PREFIX = "sudo-";
 
@@ -171,6 +176,10 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
 
     static final Property SSH_RETRY_ENABLE = PropertyUtil.bool(CONFIG_RETRY_ENABLE, "Enable retry on fail?",
             "Enable a connection retry when the connection fails",
+            false, "false");
+
+    static final Property USE_SFTP = PropertyUtil.bool(CONFIG_USE_SFTP, "Use SFTP",
+            "Use SFTP for file transfer",
             false, "false");
 
     private SSHClient sshClient;

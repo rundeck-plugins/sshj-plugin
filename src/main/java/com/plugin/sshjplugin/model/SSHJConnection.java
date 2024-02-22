@@ -49,6 +49,8 @@ public interface SSHJConnection{
 
     int getConnectTimeout();
 
+    boolean useSftp();
+
     int getKeepAliveInterval();
 
     int getKeepAliveMaxAlive();

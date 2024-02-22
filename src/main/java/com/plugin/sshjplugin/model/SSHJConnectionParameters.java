@@ -207,6 +207,11 @@ public class SSHJConnectionParameters implements SSHJConnection{
     }
 
     @Override
+    public boolean useSftp() {
+        return propertyResolver.resolveBoolean(SSHJNodeExecutorPlugin.NODE_ATTR_USE_SFTP);
+    }
+
+    @Override
     public int getKeepAliveInterval() {
 
         return propertyResolver.resolveLongFwk(
