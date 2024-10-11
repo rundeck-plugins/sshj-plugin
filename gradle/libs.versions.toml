@@ -11,7 +11,7 @@ junit = "4.13.2"
 groovy = "2.5.23"
 spock = "1.3-groovy-2.5"
 cglib = "3.3.0"
-objenesis = "1.4"
+objenesis = "3.4"
 axionRelease = "1.18.12"
 
 [libraries]
