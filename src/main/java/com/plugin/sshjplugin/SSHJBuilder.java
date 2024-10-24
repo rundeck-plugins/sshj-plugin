@@ -22,7 +22,7 @@ public class SSHJBuilder {
         SSHJExec sshbase = new SSHJExec();
         final String commandString = StringUtils.join(args, " ");
         sshbase.setCommand(commandString);
-
+        sshbase.setAllowPTY(sshjConnectionParameters.isAllocatePTY());
         configureSSHBase(nodeentry, sshjConnectionParameters, sshbase, logger);
         addEnvVars(sshbase, dataContext);
 

@@ -297,7 +297,10 @@ public class SSHJConnectionParameters implements SSHJConnection{
     public String getBindAddress() {
         return null;
     }
-
+    @Override
+    public boolean isAllocatePTY() {
+        return propertyResolver.resolveBoolean(SSHJNodeExecutorPlugin.CONFIG_SET_PTY);
+    }
 
 
 

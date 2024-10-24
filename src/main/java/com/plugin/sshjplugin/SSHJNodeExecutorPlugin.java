@@ -78,6 +78,7 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
     public static final String NODE_ATTR_USE_SFTP = "use-sftp";
 
     public static final String PROJECT_SSH_USER = PROJ_PROP_PREFIX + "ssh.user";
+    public static final String CONFIG_SET_PTY = "always-set-pty";
 
     public static final String FWK_PROP_SSH_AUTHENTICATION = FWK_PROP_PREFIX + NODE_ATTR_SSH_AUTHENTICATION;
     public static final String PROJ_PROP_SSH_AUTHENTICATION = PROJ_PROP_PREFIX + NODE_ATTR_SSH_AUTHENTICATION;
@@ -104,6 +105,10 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
 
     public static final String FWK_PROP_USE_SFTP = FWK_PROP_PREFIX + NODE_ATTR_USE_SFTP;
     public static final String PROJ_PROP_USE_SFTP = PROJ_PROP_PREFIX + NODE_ATTR_USE_SFTP;
+
+    public static final String NODE_ATTR_ALWAYS_SET_PTY = "always-set-pty";
+    public static final String FWK_PROP_SET_PTY = FWK_PROP_PREFIX + NODE_ATTR_ALWAYS_SET_PTY;
+    public static final String PROJ_PROP_SET_PTY = PROJ_PROP_PREFIX + NODE_ATTR_ALWAYS_SET_PTY;
 
     public static final String SUDO_OPT_PREFIX = "sudo-";
 
@@ -182,6 +187,10 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
             "Use SFTP for file transfer",
             false, "false");
 
+    public static final Property ALWAYS_SET_PTY = PropertyUtil.bool(CONFIG_SET_PTY, "Force PTY",
+            "Always force use of new pty",
+            false, "false");
+
     private SSHClient sshClient;
 
     public void setSshClient(SSHClient sshClient) {
@@ -210,6 +219,7 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
         builder.property(SSH_KEEP_ALIVE_MAX_ALIVE_COUNT);
         builder.property(SSH_RETRY_ENABLE);
         builder.property(SSH_RETRY_COUNTER);
+        builder.property(ALWAYS_SET_PTY);
 
         //mapping config input on project and framework level
         builder.mapping(CONFIG_KEYPATH, PROJ_PROP_SSH_KEYPATH);
@@ -233,6 +243,9 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
         builder.mapping(CONFIG_RETRY_ENABLE, PROJ_PROP_RETRY_ENABLE);
         builder.frameworkMapping(CONFIG_RETRY_ENABLE, FWK_PROP_RETRY_ENABLE);
 
+        builder.mapping(CONFIG_SET_PTY, PROJ_PROP_SET_PTY);
+        builder.frameworkMapping(CONFIG_SET_PTY, FWK_PROP_SET_PTY);
+
         return builder.build();
     }
 
@@ -246,6 +259,7 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
                     node
             );
         }
+
         boolean success = false;
 
         final ExecutionListener listener = context.getExecutionListener();

@@ -24,9 +24,14 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
     private String command = null;
     private int exitStatus = -1;
     private Map<String, String> envVars = null;
+    private boolean allowPTY = false;
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public void setAllowPTY(boolean allowPTY){
+        this.allowPTY = allowPTY;
     }
 
     public void setPluginLogger(PluginLogger pluginLogger) {
@@ -53,6 +58,9 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
             pluginLogger.log(3, "["+getPluginName()+"]  starting session" );
 
             session = ssh.startSession();
+            if(this.allowPTY){
+                session.allocateDefaultPTY();
+            }
 
             pluginLogger.log(3, "["+getPluginName()+"] setting environments" );
 

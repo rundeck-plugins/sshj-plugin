@@ -66,4 +66,7 @@ public interface SSHJConnection{
     Map<String, String> getSshConfig();
 
     String getBindAddress();
+
+    boolean isAllocatePTY();
+
 }
