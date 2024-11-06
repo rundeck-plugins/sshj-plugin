@@ -83,9 +83,9 @@ public class SSHJScp extends SSHJBase {
                     try {
 
                         if(useSftp) {
-                            sftp.put(new FileSystemFile(this.localFile), toDir);
+                            sftp.put(new FileSystemFile(file), toDir);
                         } else {
-                            ssh.newSCPFileTransfer().upload(new FileSystemFile(this.localFile), toDir);
+                            ssh.newSCPFileTransfer().upload(new FileSystemFile(file), toDir);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
