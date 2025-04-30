@@ -2,7 +2,7 @@
 sshj = "0.39.0"
 asnOne = "0.6.0"
 eddsa = "0.3.0"
-bouncycastle = "1.78.1"
+bouncycastle = "1.8.0"
 expectit = "0.9.0"
 commonsIo = "2.17.0"
 rundeckCore = "5.0.1-20240115"
