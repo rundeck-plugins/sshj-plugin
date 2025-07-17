@@ -1,24 +1,21 @@
 plugins {
-    alias(libs.plugins.axionRelease)
     id 'java'
-    id 'maven-publish'
+    id 'groovy'
+    id 'idea'
+    alias(libs.plugins.axionRelease)
+    alias(libs.plugins.nexusPublish)
 }
 
-defaultTasks 'clean','build'
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'idea'
-
-ext.rundeckPluginVersion= '1.2'
-ext.rundeckVersion= '3.3.x'
+group = 'org.rundeck.plugins'
 ext.pluginClassNames='com.plugin.sshjplugin.SSHJNodeExecutorPlugin,com.plugin.sshjplugin.SSHJFileCopierPlugin'
 ext.pluginName = 'SSHJ Plugin'
-ext.pluginDescription ='SSH Node Executor and File Copier plugin based on SSHJ library.'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
+ext.pluginDescription = 'SSH Node Executor and File Copier plugin based on SSHJ library.'
+ext.rundeckPluginVersion= '1.2'
+ext.publishName = "SSHJ Plugin ${project.version}"
+ext.githubSlug = 'rundeck-plugins/sshj-plugin'
+ext.developers = [
+        [id: 'gschueler', name: 'Greg Schueler', email: 'greg@rundeck.com']
+]
 
 scmVersion {
     ignoreUncommittedChanges = true
@@ -28,7 +25,12 @@ scmVersion {
     }
 }
 
-project.version = scmVersion.version
+allprojects {
+    project.version = scmVersion.version
+    apply from: "${rootDir}/gradle/java.gradle"
+}
+
+defaultTasks 'clean','build'
 
 repositories {
     mavenLocal()
@@ -75,25 +77,31 @@ jar {
         attributes 'Rundeck-Plugin-Rundeck-Compatibility-Version': '2.x+'
         attributes 'Rundeck-Plugin-Tags': 'java,executor'
         attributes 'Rundeck-Plugin-License': 'MIT'
-        attributes 'Rundeck-Plugin-Source-Link': 'https://github.com/rundeck-plugins'
+        attributes 'Rundeck-Plugin-Source-Link': 'https://github.com/rundeck-plugins/sshj-plugin'
         attributes 'Rundeck-Plugin-Target-Host-Compatibility': 'all'
         attributes 'Rundeck-Plugin-Author': 'Rundeck, Inc.'
         attributes 'Rundeck-Plugin-Classnames': pluginClassNames
-        attributes 'Rundeck-Plugin-File-Version': version
+        attributes 'Rundeck-Plugin-File-Version': project.version
         attributes 'Rundeck-Plugin-Version': rundeckPluginVersion, 'Rundeck-Plugin-Archive': 'true'
         attributes 'Rundeck-Plugin-Libs': "${libList}"
-        attributes 'Class-Path': "${libList} lib/rundeck-core-${rundeckVersion}.jar"
     }
 }
+
+test {
+    useJUnitPlatform()
+}
+
 //set jar task to depend on copyToLib
 jar.dependsOn(copyToLib)
 
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'jq-json-logfilter'
-            from components.java
+nexusPublishing {
+    packageGroup = 'org.rundeck.plugins'
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
         }
     }
 }
+
+apply from: "${rootDir}/gradle/publishing.gradle"
