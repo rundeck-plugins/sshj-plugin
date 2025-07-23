@@ -1,5 +1,5 @@
 [versions]
-sshj = "0.39.0"
+sshj = "0.40.0"
 asnOne = "0.6.0"
 eddsa = "0.3.0"
 bouncycastle = "1.80"
