@@ -2,3 +2,4 @@
 .idea
 build
 out
+/docker/client/rundeck-cli/node_modules/
