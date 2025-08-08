@@ -25,5 +25,8 @@
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",
     "@types/yargs": "^15.0.4"
+  },
+  "overrides": {
+    "axios": "1.11.0"
   }
 }
