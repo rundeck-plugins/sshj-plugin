@@ -2,17 +2,14 @@ package com.plugin.sshjplugin.model;
 
 import com.dtolabs.rundeck.plugins.PluginLogger;
 import com.plugin.sshjplugin.SSHJBuilder;
-import com.plugin.sshjplugin.SSHJDefaultConfig;
 import com.plugin.sshjplugin.SSHJPluginLoggerFactory;
-import net.schmizz.keepalive.KeepAlive;
-import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.keepalive.KeepAliveRunner;
-import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 public class SSHJBase {
 
@@ -92,7 +89,8 @@ public class SSHJBase {
         try {
             ssh.loadKnownHosts();
         } catch (IOException e) {
-            pluginLogger.log(3, "["+getPluginName()+"] " + e.getMessage());
+            pluginLogger.log(3, "["+getPluginName()+"] Warning: Could not load known hosts: " + e.getMessage() + 
+                          " (" + e.getClass().getSimpleName() + ")");
         }
 
         int count=0;
@@ -133,18 +131,24 @@ public class SSHJBase {
                 }
 
             } catch (TransportException e) {
-                pluginLogger.log(2, "["+getPluginName()+"] TransportException: " + e.getMessage());
+                pluginLogger.log(2, "["+getPluginName()+"] TransportException: " + e.getMessage() + 
+                              " (" + e.getClass().getSimpleName() + ")");
                 if(retry && count<=retryCount){
                     retryConnections++;
                     pluginLogger.log(2, "["+getPluginName()+"]  trying again");
                     pluginLogger.log(2, "["+getPluginName()+"]  total connections " + connectionNumber);
                     pluginLogger.log(2, "["+getPluginName()+"]  total retries " + retryConnections);
                 }else{
-                    throw new SSHJBuilder.BuilderException(e.getMessage());
+                    throw new SSHJBuilder.BuilderException("Transport error: " + e.getMessage(), e);
                 }
+            } catch (UnknownHostException e) {
+                pluginLogger.log(2, "["+getPluginName()+"] DNS resolution FAILED: hostname=" + hostname + 
+                                  " - Unable to resolve hostname to IP address. Check DNS configuration and network connectivity.");
+                throw new SSHJBuilder.BuilderException("DNS resolution failed for hostname: " + hostname, e);
             } catch (IOException e) {
-                pluginLogger.log(3, "["+getPluginName()+"] Connection fail: " + e.getMessage());
-                throw new SSHJBuilder.BuilderException(e.getMessage());
+                pluginLogger.log(2, "["+getPluginName()+"] Connection failed: " + e.getMessage() + 
+                              " (" + e.getClass().getSimpleName() + ")");
+                throw new SSHJBuilder.BuilderException("Connection failed: " + e.getMessage(), e);
             }
 
             count++;

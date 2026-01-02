@@ -2,14 +2,14 @@
 sshj = "0.40.0"
 asnOne = "0.6.0"
 eddsa = "0.3.0"
-bouncycastle = "1.80"
+bouncycastle = "1.79"
 expectit = "0.9.0"
 commonsIo = "2.17.0"
-rundeckCore = "5.16.0-20251006"
+rundeckCore = "6.0.0-SNAPSHOT"
 slf4j = "2.0.17"
 junit = "4.13.2"
-groovy = "3.0.22"
-spock = "2.0-groovy-3.0"
+groovy = "4.0.29"
+spock = "2.4-groovy-4.0"
 cglib = "3.3.0"
 objenesis = "1.4"
 axionRelease = "1.18.18"
@@ -28,7 +28,7 @@ commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsI
 rundeckCore = { group = "org.rundeck", name = "rundeck-core", version.ref = "rundeckCore" }
 slf4jApi = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-groovyAll = { group = "org.codehaus.groovy", name = "groovy-all", version.ref = "groovy" }
+groovyAll = { group = "org.apache.groovy", name = "groovy-all", version.ref = "groovy" }
 spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "spock" }
 cglibNodep = { group = "cglib", name = "cglib-nodep", version.ref = "cglib" }
 objenesis = { group = "org.objenesis", name = "objenesis", version.ref = "objenesis" }

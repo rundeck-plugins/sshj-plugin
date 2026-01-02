@@ -42,7 +42,7 @@ public class SSHJAuthentication {
                     try{
                         passphrase = connectionParameters.getPrivateKeyPassphrase(passphrasePath);
                     } catch (Exception e) {
-                        throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath);
+                        throw new SSHJBuilder.BuilderException("Failed to read SSH Passphrase stored at path: " + passphrasePath, e);
                     }
                 }
                 if(privateKeyFileSystemPath != null && privateKeyStoragePath == null){
@@ -59,7 +59,7 @@ public class SSHJAuthentication {
                     try{
                         privateKeyContent = connectionParameters.getPrivateKeyStorage(privateKeyStoragePath);
                     } catch (Exception e) {
-                        throw new SSHJBuilder.BuilderException("Failed to read SSH Key Storage stored at path: " + privateKeyStoragePath);
+                        throw new SSHJBuilder.BuilderException("Failed to read SSH Key Storage stored at path: " + privateKeyStoragePath, e);
                     }
                     KeyFormat format = KeyProviderUtil.detectKeyFileFormat(privateKeyContent,true);
                     keys = Factory.Named.Util.create(ssh.getTransport().getConfig().getFileKeyProviderFactories(), format.toString());
@@ -83,7 +83,7 @@ public class SSHJAuthentication {
                 try{
                     password = connectionParameters.getPassword(passwordPath);
                 } catch (Exception e) {
-                    throw new SSHJBuilder.BuilderException("Failed to read SSH Password stored at path: " + passwordPath);
+                    throw new SSHJBuilder.BuilderException("Failed to read SSH Password stored at path: " + passwordPath, e);
                 }
 
                 ssh.authPassword(username, password);

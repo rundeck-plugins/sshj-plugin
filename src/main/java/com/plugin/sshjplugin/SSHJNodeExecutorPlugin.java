@@ -277,7 +277,8 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
                     connectionInfo,
                     listener);
         } catch (Exception e) {
-            e.printStackTrace();
+            listener.log(2, "[" + getClass().getSimpleName() + "] Failed to build SSH executor: " + 
+                        e.getMessage() + " (" + e.getClass().getSimpleName() + ")");
         }
 
 
@@ -291,6 +292,9 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
                 config.setLoggerFactory(new SSHJPluginLoggerFactory(listener));
                 config.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
                 sshClient = new SSHClient(config);
+            }
+            if (sshexec == null) {
+                throw new SSHJBuilder.BuilderException("Failed to initialize SSH executor");
             }
             sshexec.connect(sshClient);
             sshexec.execute(sshClient);
@@ -313,7 +317,9 @@ public class SSHJNodeExecutorPlugin implements NodeExecutor, ProxySecretBundleCr
                     sshClient.disconnect();
                     sshClient.close();
                 } catch (Exception iex) {
-                    throw new SSHJBuilder.BuilderException(iex);
+                    // Log cleanup errors instead of throwing to avoid masking original exception
+                    listener.log(2, "[" + getClass().getSimpleName() + "] Error closing SSH client: " + 
+                                iex.getMessage() + " (" + iex.getClass().getSimpleName() + ")");
                 }
             }
 
