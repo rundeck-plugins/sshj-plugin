@@ -41,9 +41,9 @@ repositories {
         name = 'Central Portal Snapshots'
         url = 'https://central.sonatype.com/repository/maven-snapshots/'
         
-        // Only search this repository for rundeck-core snapshots
+        // Only search this repository for org.rundeck snapshots
         content {
-            includeModule('org.rundeck', 'rundeck-core')
+            includeGroup('org.rundeck')
         }
     }
     mavenCentral()
