@@ -37,6 +37,12 @@ defaultTasks 'clean','build'
 
 repositories {
     mavenLocal()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
     mavenCentral()
 }
 
