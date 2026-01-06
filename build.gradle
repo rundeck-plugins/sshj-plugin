@@ -31,7 +31,7 @@ allprojects {
 }
 
 // Override version for Grails 7 upgrade
-project.version = '0.1.22-grails7-upgrade-test'
+project.version = '0.1.23-grails7-upgrade-test'
 
 defaultTasks 'clean','build'
 
