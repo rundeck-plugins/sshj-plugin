@@ -124,7 +124,7 @@ test {
 jar.dependsOn(copyToLib)
 
 nexusPublishing {
-    packageGroup = 'com.github.rundeck-plugins'
+    packageGroup = 'com.rundeck.plugins'
     repositories {
         sonatype {
             nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
@@ -135,20 +135,18 @@ nexusPublishing {
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-// Add PackageCloud repository after publishing.gradle configures the publication
-afterEvaluate {
-    publishing {
-        repositories {
-            maven {
-                name = "PackageCloudTest"
-                url = uri("https://packagecloud.io/pagerduty/rundeckpro-test/maven2")
-                authentication {
-                    header(HttpHeaderAuthentication)
-                }
-                credentials(HttpHeaderCredentials) {
-                    name = "Authorization"
-                    value = "Bearer " + (System.getenv("PKGCLD_WRITE_TOKEN") ?: project.findProperty("pkgcldWriteToken"))
-                }
+// Add PackageCloud repository
+publishing {
+    repositories {
+        maven {
+            name = "PackageCloudTest"
+            url = uri("https://packagecloud.io/pagerduty/rundeckpro-test/maven2")
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                value = "Bearer " + (System.getenv("PKGCLD_WRITE_TOKEN") ?: project.findProperty("pkgcldWriteToken"))
             }
         }
     }
