@@ -66,16 +66,42 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
 
             /* set env vars if any are embedded */
             if (null != envVars && envVars.size() > 0) {
-
+                pluginLogger.log(3, "["+getPluginName()+"] Attempting to set " + envVars.size() + 
+                                  " environment variables for host: " + getHostname());
+                
+                int successCount = 0;
+                int failureCount = 0;
+                
                 for (Map.Entry<String, String> entry : envVars.entrySet()) {
                     try {
                         pluginLogger.log(3, "["+getPluginName()+"] " + entry.getKey() + " => " + entry.getValue());
                         session.setEnvVar(entry.getKey(), entry.getValue());
+                        successCount++;
+                        pluginLogger.log(3, "["+getPluginName()+"] Successfully set SSH environment variable: " + entry.getKey() + 
+                                          " (value length: " + entry.getValue().length() + ") for host: " + getHostname());
                     } catch (ConnectionException e) {
-                        pluginLogger.log(3, "["+getPluginName()+"] Env variable " + entry.getKey() + " cannot by set: " + e.getMessage());
+                        failureCount++;
+                        pluginLogger.log(2, "["+getPluginName()+"] Failed to set SSH environment variable: " + entry.getKey() + 
+                                          " for host: " + getHostname() + ". Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                        if (e.getCause() != null) {
+                            pluginLogger.log(2, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
+                        }
                     } catch (TransportException e) {
-                        pluginLogger.log(3, "["+getPluginName()+"] Env variable " + entry.getKey() + " cannot by set: " + e.getMessage());
+                        failureCount++;
+                        pluginLogger.log(2, "["+getPluginName()+"] Failed to set SSH environment variable: " + entry.getKey() + 
+                                          " for host: " + getHostname() + ". TransportException: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                        if (e.getCause() != null) {
+                            pluginLogger.log(2, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
+                        }
                     }
+                }
+                
+                if (failureCount > 0) {
+                    pluginLogger.log(2, "["+getPluginName()+"] Environment variable setting completed for host: " + getHostname() + 
+                                      ". Success: " + successCount + ", Failed: " + failureCount);
+                } else {
+                    pluginLogger.log(3, "["+getPluginName()+"] Successfully set all " + envVars.size() + 
+                                      " environment variables for host: " + getHostname());
                 }
             }
 
@@ -136,8 +162,9 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
             pluginLogger.log(3, "["+getPluginName()+"] done" );
 
         } catch (IOException iex) {
-            pluginLogger.log(0, iex.getMessage());
-            throw new SSHJBuilder.BuilderException(iex);
+            pluginLogger.log(2, "["+getPluginName()+"] Command execution failed: " + iex.getMessage() + 
+                          " (" + iex.getClass().getSimpleName() + ")");
+            throw new SSHJBuilder.BuilderException("Command execution failed: " + iex.getMessage(), iex);
         } finally {
             pluginLogger.log(3, "["+getPluginName()+"] closing session");
 

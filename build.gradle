@@ -18,11 +18,12 @@ ext.developers = [
 ]
 
 scmVersion {
-    ignoreUncommittedChanges = true
+    ignoreUncommittedChanges = false
     tag {
-        prefix = 'v'
+        prefix = ''           // NO "v" prefix - see PLUGIN_TAGGING_ARCHITECTURE.md
         versionSeparator = ''
     }
+    versionCreator 'simple'  // Use simple version creator (just tag name)
 }
 
 allprojects {
@@ -34,6 +35,15 @@ defaultTasks 'clean','build'
 
 repositories {
     mavenLocal()
+    maven {
+        name = 'Central Portal Snapshots'
+        url = 'https://central.sonatype.com/repository/maven-snapshots/'
+        
+        // Only search this repository for org.rundeck snapshots
+        content {
+            includeGroup('org.rundeck')
+        }
+    }
     mavenCentral()
 }
 
@@ -55,7 +65,8 @@ dependencies {
     pluginLibs libs.expectitCore
 
     implementation libs.commonsIo
-    implementation libs.rundeckCore
+    compileOnly libs.rundeckCore
+    testImplementation libs.rundeckCore
     implementation libs.slf4jApi
     
     // Add secure commons-lang3 to provide alternative to vulnerable commons-lang 2.6
@@ -101,6 +112,13 @@ jar {
 
 test {
     useJUnitPlatform()
+    
+    // Java 17+ module access for cglib/Spock mocking
+    jvmArgs = [
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.util=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+    ]
 }
 
 //set jar task to depend on copyToLib
@@ -117,3 +135,20 @@ nexusPublishing {
 }
 
 apply from: "${rootDir}/gradle/publishing.gradle"
+
+// Add PackageCloud repository
+publishing {
+    repositories {
+        maven {
+            name = "PackageCloudTest"
+            url = uri("https://packagecloud.io/pagerduty/rundeckpro-test/maven2")
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                value = "Bearer " + (System.getenv("PKGCLD_WRITE_TOKEN") ?: project.findProperty("pkgcldWriteToken"))
+            }
+        }
+    }
+}
