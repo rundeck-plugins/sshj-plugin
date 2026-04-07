@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.nexusPublish)
 }
 
-group = 'com.rundeck.plugins'
+group = 'org.rundeck.plugins'
 ext.pluginClassNames='com.plugin.sshjplugin.SSHJNodeExecutorPlugin,com.plugin.sshjplugin.SSHJFileCopierPlugin'
 ext.pluginName = 'SSHJ Plugin'
 ext.pluginDescription = 'SSH Node Executor and File Copier plugin based on SSHJ library.'
@@ -65,7 +65,8 @@ dependencies {
     pluginLibs libs.expectitCore
 
     implementation libs.commonsIo
-    implementation libs.rundeckCore
+    compileOnly libs.rundeckCore
+    testImplementation libs.rundeckCore
     implementation libs.slf4jApi
     
     // Add secure commons-lang3 to provide alternative to vulnerable commons-lang 2.6
@@ -124,7 +125,7 @@ test {
 jar.dependsOn(copyToLib)
 
 nexusPublishing {
-    packageGroup = 'com.rundeck.plugins'
+    packageGroup = 'org.rundeck.plugins'
     repositories {
         sonatype {
             nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
