@@ -7,6 +7,7 @@
 build/
 bin/
 out/
+.temp/
 
 # VS Code
 .vscode/

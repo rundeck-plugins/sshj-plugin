@@ -1,6 +1,5 @@
 package com.plugin.sshjplugin.model;
 
-import com.dtolabs.rundeck.plugins.PluginLogger;
 import com.plugin.sshjplugin.SSHJBuilder;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.xfer.FileSystemFile;
@@ -49,14 +48,14 @@ public class SSHJScp extends SSHJBase {
         this.pluginName = "sshj-scp";
     }
 
-    public void execute(SSHClient ssh) throws Exception {
-
-        if(useSftp) {
-            sftp = ssh.newSFTPClient();
-        }
+    public void execute(SSHClient ssh) throws SSHJBuilder.BuilderException {
 
         pluginLogger.log(3, "["+this.getPluginName()+"] SSHJ File Copier");
+        Exception mainException = null;
         try {
+            if(useSftp) {
+                sftp = ssh.newSFTPClient();
+            }
 
             if (this.localFile != null && this.fileSets == null) {
                 if (toDir != null && remoteTofile == null) {
@@ -88,20 +87,36 @@ public class SSHJScp extends SSHJBase {
                             ssh.newSCPFileTransfer().upload(new FileSystemFile(file), toDir);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        pluginLogger.log(2, "["+getPluginName()+"] Failed to copy file " + file.getAbsolutePath() + 
+                                          ": " + e.getMessage() + " (" + e.getClass().getSimpleName() + ")");
+                        if (mainException == null) {
+                            mainException = e;
+                        }
                     }
+                }
+                if (mainException != null) {
+                    throw new SSHJBuilder.BuilderException("One or more files failed to copy", mainException);
                 }
             }
         } catch (IOException iex) {
-            iex.printStackTrace();
-            pluginLogger.log(0, iex.getMessage());
-            throw new Exception(iex);
+            pluginLogger.log(2, "["+getPluginName()+"] File copy failed: " + iex.getMessage() + 
+                          " (" + iex.getClass().getSimpleName() + ")");
+            throw new SSHJBuilder.BuilderException("File copy operation failed: " + iex.getMessage(), iex);
         } finally {
+            // Close SFTP client if it was opened
+            if (sftp != null) {
+                try {
+                    sftp.close();
+                } catch (IOException e) {
+                    pluginLogger.log(2, "["+getPluginName()+"] Error closing SFTP client: " + e.getMessage());
+                }
+            }
+            // Close SSH connection (log errors instead of throwing to avoid masking original exception)
             try {
                 ssh.disconnect();
                 ssh.close();
             } catch (IOException iex) {
-                throw new Exception(iex);
+                pluginLogger.log(2, "["+getPluginName()+"] Error closing SSH connection: " + iex.getMessage());
             }
         }
     }
