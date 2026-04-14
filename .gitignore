@@ -41,3 +41,5 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+/docker/client/rundeck-cli/node_modules
