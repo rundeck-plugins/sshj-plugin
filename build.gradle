@@ -97,12 +97,12 @@ jar {
         def libList = configurations.pluginLibs.collect{'lib/'+it.name}.join(' ')
         attributes 'Rundeck-Plugin-Name' : pluginName
         attributes 'Rundeck-Plugin-Description' : pluginDescription
-        attributes 'Rundeck-Plugin-Rundeck-Compatibility-Version': '2.x+'
+        attributes 'Rundeck-Plugin-Rundeck-Compatibility-Version': '6.x+'
         attributes 'Rundeck-Plugin-Tags': 'java,executor'
         attributes 'Rundeck-Plugin-License': 'MIT'
         attributes 'Rundeck-Plugin-Source-Link': 'https://github.com/rundeck-plugins/sshj-plugin'
         attributes 'Rundeck-Plugin-Target-Host-Compatibility': 'all'
-        attributes 'Rundeck-Plugin-Author': 'Rundeck, Inc.'
+        attributes 'Rundeck-Plugin-Author': 'Rundeck'
         attributes 'Rundeck-Plugin-Classnames': pluginClassNames
         attributes 'Rundeck-Plugin-File-Version': project.version
         attributes 'Rundeck-Plugin-Version': rundeckPluginVersion, 'Rundeck-Plugin-Archive': 'true'
