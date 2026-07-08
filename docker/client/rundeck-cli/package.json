@@ -27,7 +27,7 @@
     "@types/yargs": "^15.0.4"
   },
   "overrides": {
-    "axios": "1.16.1",
+    "axios": "1.18.1",
     "follow-redirects": "1.16.0",
     "tough-cookie": "4.1.4",
     "xml-js": "0.5.1",
