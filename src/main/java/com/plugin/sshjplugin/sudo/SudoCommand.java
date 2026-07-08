@@ -26,11 +26,14 @@ public class SudoCommand {
     private PluginLogger logger;
 
     // Matches a shell prompt ending in dollar sign (regular user) or hash (root),
-    // optionally followed by trailing whitespace. The previous pattern "~.*\\$"
-    // assumed every prompt contains a literal '~' (e.g. "user@host:~$"), which is
-    // not true for custom PS1 values or root shells, causing the initial expect()
-    // to never match and block until the (misconfigured) timeout elapsed.
-    static final String PROMPT_PATTERN = ".*[#$]\\s*";
+    // optionally followed by trailing whitespace, anchored to the end of the
+    // buffered output. The previous pattern "~.*\\$" assumed every prompt contains
+    // a literal '~' (e.g. "user@host:~$"), which is not true for custom PS1 values
+    // or root shells, causing the initial expect() to never match and block until
+    // the (misconfigured) timeout elapsed. The end-of-input anchor is required so
+    // this doesn't match a '$'/'#' appearing mid-output (e.g. "PATH=$PATH:...")
+    // before the real prompt has been read.
+    static final String PROMPT_PATTERN = ".*[#$]\\s*$";
 
     // Matches a leaked ANSI/VT100 control sequence remnant (e.g. a bracketed-paste
     // mode toggle). expectit's removeNonPrintable() filter only strips the leading
@@ -46,10 +49,19 @@ public class SudoCommand {
     }
 
     /**
-     * True if the sanitized response is a plain integer, as a shell exit code must be.
+     * True if the sanitized response actually parses as an int, as a shell exit
+     * code must, so callers can safely call Integer.parseInt() afterwards. A plain
+     * digit-regex check is not enough: an overly long digit string (e.g. from
+     * further unstripped noise) matches "-?\d+" but still overflows int and throws
+     * NumberFormatException downstream.
      */
     static boolean isValidExitCode(String sanitized) {
-        return sanitized.matches("-?\\d+");
+        try {
+            Integer.parseInt(sanitized);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     public void setOutputStream(OutputStream outputStream) {

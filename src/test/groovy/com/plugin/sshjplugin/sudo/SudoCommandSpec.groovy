@@ -3,6 +3,8 @@ package com.plugin.sshjplugin.sudo
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.regex.Pattern
+
 class SudoCommandSpec extends Specification {
 
     @Unroll
@@ -25,27 +27,32 @@ class SudoCommandSpec extends Specification {
         SudoCommand.isValidExitCode(value) == valid
 
         where:
-        value        | valid
-        "0"          | true
-        "127"        | true
-        "-1"         | true
-        ""           | false
-        "abc"        | false
+        value                | valid
+        "0"                  | true
+        "127"                | true
+        "-1"                 | true
+        ""                   | false
+        "abc"                | false
+        // 19 digits overflows a signed int; a plain digit-regex would wrongly
+        // accept it, but Integer.parseInt() (and thus this check) must not.
+        "99999999999999999"  | false
     }
 
-    def "prompt pattern matches root shell prompt without a tilde"() {
+    // expectit's regexp() matcher uses Matcher.find() against the growing output
+    // buffer, not a whole-string match, so the pattern itself must anchor to the
+    // end of input or it will fire on any '$'/'#' that merely appears mid-output.
+    @Unroll
+    def "prompt pattern find() behavior for '#text'"() {
         expect:
-        "root@host:/etc# ".matches(SudoCommand.PROMPT_PATTERN)
-    }
+        Pattern.compile(SudoCommand.PROMPT_PATTERN).matcher(text).find() == shouldMatch
 
-    def "prompt pattern matches standard user prompt with a tilde"() {
-        expect:
-        "user@host:~\$ ".matches(SudoCommand.PROMPT_PATTERN)
-    }
-
-    def "prompt pattern matches a custom PS1 without a tilde"() {
-        expect:
-        "[user@host project]\$ ".matches(SudoCommand.PROMPT_PATTERN)
+        where:
+        text                                    | shouldMatch
+        "root@host:/etc# "                      | true
+        "user@host:~\$ "                        | true
+        "[user@host project]\$ "                | true
+        "export PATH=\$PATH:/usr/bin\n"         | false
+        "echo \$HOME is set\n"                  | false
     }
 
     // Reconstructed from its unicode code point so the source file never contains
