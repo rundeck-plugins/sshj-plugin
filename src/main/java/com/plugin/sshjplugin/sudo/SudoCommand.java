@@ -24,6 +24,13 @@ public class SudoCommand {
     private String sudoPromptPattern;
     private String sudoPassword;
     private PluginLogger logger;
+    private long commandTimeoutMs;
+
+    // Fail-fast timeout for the interactive prompt/password exchanges (initial
+    // shell prompt, "[sudo] password" prompt, exit-code echo). These are all
+    // near-instantaneous shell interactions, so 30s is ample and lets a broken
+    // prompt-pattern match fail quickly instead of appearing to hang.
+    private static final long PROMPT_TIMEOUT_MS = 30_000;
 
     // Matches a shell prompt ending in dollar sign (regular user) or hash (root),
     // optionally followed by trailing whitespace, anchored to the end of the
@@ -100,6 +107,17 @@ public class SudoCommand {
         this.logger = logger;
     }
 
+    /**
+     * @param commandTimeoutMs max time to wait for the sudo'd command itself to
+     *                         finish and return to a shell prompt, in milliseconds.
+     *                         0 (or less) means wait indefinitely, matching the
+     *                         same semantics as the non-sudo ssh-command-timeout
+     *                         node/project attribute.
+     */
+    public void setCommandTimeoutMs(long commandTimeoutMs) {
+        this.commandTimeoutMs = commandTimeoutMs;
+    }
+
     public String runSudoCommand(String command) throws IOException {
 
         Expect expect = new ExpectBuilder()
@@ -112,10 +130,13 @@ public class SudoCommand {
                 //.withEchoInput(new SSHJAppendable(pluginLogger,2))
                 .withInputFilters(removeColors(), removeNonPrintable())
                 .withExceptionOnFailure()
-                // Was "30000, TimeUnit.SECONDS" (~8.3 hours) - a unit typo that made
-                // the sudo flow appear to hang indefinitely instead of failing fast
-                // when a prompt/pattern never matched.
-                .withTimeout(30000, TimeUnit.MILLISECONDS)
+                // Was "30000, TimeUnit.SECONDS" (~8.3 hours) applied to every step
+                // below, including the prompt/password exchanges - a unit typo that
+                // made a broken prompt-pattern match hang for hours instead of
+                // failing fast. This default now only governs those quick prompt
+                // exchanges; the actual command-completion wait below gets its own,
+                // configurable timeout so long-running sudo commands aren't cut off.
+                .withTimeout(PROMPT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .build();
 
         expect.expect(regexp(PROMPT_PATTERN));
@@ -131,7 +152,15 @@ public class SudoCommand {
         expect.expect(contains(sudoPromptPattern));
         expect.sendLine(sudoPassword);
 
-        expect.expect(regexp(PROMPT_PATTERN));
+        // Waiting for the shell prompt to return here means waiting for the sudo'd
+        // command itself to finish, which can take far longer than a prompt
+        // exchange - so this uses the user-configurable command timeout (same
+        // ssh-command-timeout knob the non-sudo path honors) instead of the short
+        // prompt-detection default above.
+        Expect commandWait = commandTimeoutMs > 0
+                ? expect.withTimeout(commandTimeoutMs, TimeUnit.MILLISECONDS)
+                : expect.withInfiniteTimeout();
+        commandWait.expect(regexp(PROMPT_PATTERN));
         expect.sendLine("echo $?");
 
         String rawExitCode = expect.expect(times(2, contains("\n")))

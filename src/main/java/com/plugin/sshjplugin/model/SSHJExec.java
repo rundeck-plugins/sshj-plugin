@@ -126,6 +126,7 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
                                                     .errorStream(shell.getErrorStream())
                                                     .inputStream(shell.getInputStream())
                                                     .outputStream(shell.getOutputStream())
+                                                    .commandTimeoutMs(this.getSshjConnection().getCommandTimeout())
                                                     .logger(pluginLogger).build();
 
                 String exitCodeStr = sudoCommandRunner.runSudoCommand(command);
