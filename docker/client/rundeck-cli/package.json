@@ -9,7 +9,7 @@
   "author": "Luis Toledo",
   "license": "ISC",
   "dependencies": {
-    "@types/js-yaml": "^3.12.3",
+    "@types/js-yaml": "^4.0.0",
     "@types/node": "^13.13.5",
     "dotenv": "^10.0.0",
     "form-data": "^3.0.0",
