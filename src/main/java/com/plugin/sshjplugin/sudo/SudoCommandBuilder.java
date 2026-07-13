@@ -15,6 +15,7 @@ public class SudoCommandBuilder {
     private String sudoPromptPattern;
     private String sudoPassword;
     private PluginLogger logger;
+    private long commandTimeoutMs;
 
     public SudoCommandBuilder() {
     }
@@ -59,6 +60,11 @@ public class SudoCommandBuilder {
         return this;
     }
 
+    public SudoCommandBuilder commandTimeoutMs(long commandTimeoutMs){
+        this.commandTimeoutMs = commandTimeoutMs;
+        return this;
+    }
+
     public SudoCommand build(){
         SudoCommand sudoCommand = new SudoCommand();
         sudoCommand.setEchoInput(echoInput);
@@ -69,6 +75,7 @@ public class SudoCommandBuilder {
         sudoCommand.setLogger(logger);
         sudoCommand.setSudoPassword(sudoPassword);
         sudoCommand.setSudoPromptPattern(sudoPromptPattern);
+        sudoCommand.setCommandTimeoutMs(commandTimeoutMs);
         return sudoCommand;
     }
 
