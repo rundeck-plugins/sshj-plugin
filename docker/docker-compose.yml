@@ -20,7 +20,7 @@ services:
           - 4440:4440
     mysql:
       container_name: mysql
-      image: mysql:8
+      image: mysql:9
       expose:
         - 3306
       cap_add:
