@@ -18,7 +18,7 @@
     "ts-node": "^8.10.1",
     "ts-rundeck": "^0.1.8",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.8.3",
+    "typescript": "^7.0.0",
     "yaml": "^1.10.3",
     "yargs": "^15.3.2-beta.0"
   },
