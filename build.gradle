@@ -125,14 +125,16 @@ jar.dependsOn(copyToLib)
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
+def pkgcldRepoUrl = System.getenv("PKGCLD_REPO_URL")?.trim()
+
 publishing {
     repositories {
         // Only register the PackageCloud repo when its URL is configured, so plain
         // builds/tests (which don't set PKGCLD_REPO_URL) don't fail at configuration time.
-        if (System.getenv("PKGCLD_REPO_URL")) {
+        if (pkgcldRepoUrl) {
             maven {
                 name = "PackageCloud"
-                url = uri(System.getenv("PKGCLD_REPO_URL"))
+                url = uri(pkgcldRepoUrl)
                 authentication {
                     header(HttpHeaderAuthentication)
                 }
