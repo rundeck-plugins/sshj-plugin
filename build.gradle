@@ -140,7 +140,7 @@ publishing {
     repositories {
         maven {
             name = "PackageCloud"
-            url = uri(System.getenv("PKGCLD_REPO_URL")
+            url = uri(System.getenv("PKGCLD_REPO_URL") ?: "https://packagecloud.io/pagerduty/rundeckpro/maven2")
             authentication {
                 header(HttpHeaderAuthentication)
             }
