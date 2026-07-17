@@ -127,15 +127,19 @@ apply from: "${rootDir}/gradle/publishing.gradle"
 
 publishing {
     repositories {
-        maven {
-            name = "PackageCloud"
-            url = uri(System.getenv("PKGCLD_REPO_URL"))
-            authentication {
-                header(HttpHeaderAuthentication)
-            }
-            credentials(HttpHeaderCredentials) {
-                name = "Authorization"
-                value = "Bearer " + (System.getenv("PKGCLD_WRITE_TOKEN") ?: project.findProperty("pkgcldWriteToken"))
+        // Only register the PackageCloud repo when its URL is configured, so plain
+        // builds/tests (which don't set PKGCLD_REPO_URL) don't fail at configuration time.
+        if (System.getenv("PKGCLD_REPO_URL")) {
+            maven {
+                name = "PackageCloud"
+                url = uri(System.getenv("PKGCLD_REPO_URL"))
+                authentication {
+                    header(HttpHeaderAuthentication)
+                }
+                credentials(HttpHeaderCredentials) {
+                    name = "Authorization"
+                    value = "Bearer " + (System.getenv("PKGCLD_WRITE_TOKEN") ?: project.findProperty("pkgcldWriteToken"))
+                }
             }
         }
     }
