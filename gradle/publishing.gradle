@@ -6,14 +6,12 @@
  * githubSlug = Github slug e.g. 'rundeck/rundeck-cli'
  * developers = [ [id:'id', name:'name', email: 'email' ] ] list of developers
  *
- * Define project properties to sign and publish when invoking publish task:
+ * Define project properties to sign when invoking the publish task:
  *
  *     ./gradlew \
  *     -PsigningKey="base64 encoded gpg key" \
  *     -PsigningPassword="password for key" \
- *     -PsonatypeUsername="sonatype token user" \
- *     -PsonatypePassword="sonatype token password" \
- *     publishToSonatype closeAndReleaseSonatypeStagingRepository
+ *     publishAllPublicationsToPackageCloudRepository
  */
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
