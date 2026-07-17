@@ -36,6 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to PackageCloud
-        run: ./gradlew publishAllPublicationsToPackageCloudTestRepository
+        run: ./gradlew publishAllPublicationsToPackageCloudRepository
         env:
           PKGCLD_WRITE_TOKEN: ${{ secrets.PKGCLD_WRITE_TOKEN }}
+          PKGCLD_REPO_URL: ${{ vars.PKGCLD_REPO_URL }}

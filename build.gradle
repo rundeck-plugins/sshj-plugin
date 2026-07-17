@@ -136,12 +136,11 @@ nexusPublishing {
 
 apply from: "${rootDir}/gradle/publishing.gradle"
 
-// Add PackageCloud repository
 publishing {
     repositories {
         maven {
-            name = "PackageCloudTest"
-            url = uri("https://packagecloud.io/pagerduty/rundeckpro-test/maven2")
+            name = "PackageCloud"
+            url = uri(System.getenv("PKGCLD_REPO_URL") ?: "https://packagecloud.io/pagerduty/rundeckpro/maven2")
             authentication {
                 header(HttpHeaderAuthentication)
             }
