@@ -10,6 +10,8 @@ jobs:
   build:
     name: Publish Release
     runs-on: ubuntu-latest
+    env:
+      PKGCLD_REPO_URL: ${{ vars.PKGCLD_REPO_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -39,6 +41,5 @@ jobs:
         run: ./gradlew -PsigningKey=${SIGNING_KEY_B64} -PsigningPassword=${SIGNING_PASSWORD} publishAllPublicationsToPackageCloudRepository
         env:
           PKGCLD_WRITE_TOKEN: ${{ secrets.PKGCLD_WRITE_TOKEN }}
-          PKGCLD_REPO_URL: ${{ vars.PKGCLD_REPO_URL }}
           SIGNING_KEY_B64: ${{ secrets.SIGNING_KEY_B64 }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
