@@ -38,8 +38,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to PackageCloud
-        run: ./gradlew -PsigningKey=${SIGNING_KEY_B64} -PsigningPassword=${SIGNING_PASSWORD} publishAllPublicationsToPackageCloudRepository
+        run: ./gradlew publishAllPublicationsToPackageCloudRepository
         env:
           PKGCLD_WRITE_TOKEN: ${{ secrets.PKGCLD_WRITE_TOKEN }}
-          SIGNING_KEY_B64: ${{ secrets.SIGNING_KEY_B64 }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
