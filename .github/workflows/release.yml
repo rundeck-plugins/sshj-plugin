@@ -46,3 +46,28 @@ jobs:
           ./gradlew publishAllPublicationsToPackageCloudRepository
         env:
           PKGCLD_WRITE_TOKEN: ${{ secrets.PKGCLD_WRITE_TOKEN }}
+      - name: Sign and upload GPG signatures to PackageCloud
+        run: |
+          set -e
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          BASE_URL="${PKGCLD_REPO_URL:-https://packagecloud.io/pagerduty/rundeck-plugins/maven2}/org/rundeck/plugins/sshj-plugin/${VERSION}"
+
+          echo "$SIGNING_KEY_B64" | base64 -d | gpg --batch --yes --import
+
+          sign_and_upload() {
+            local FILE="$1"
+            local REMOTE_NAME="$2"
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$SIGNING_PASSWORD" --detach-sign --armor "$FILE"
+            curl -sf -H "Authorization: Bearer ${PKGCLD_WRITE_TOKEN}" \
+              -X PUT --data-binary "@${FILE}.asc" \
+              "${BASE_URL}/${REMOTE_NAME}.asc"
+          }
+
+          sign_and_upload "build/libs/sshj-plugin-${VERSION}.jar" "sshj-plugin-${VERSION}.jar"
+          sign_and_upload "build/libs/sshj-plugin-${VERSION}-sources.jar" "sshj-plugin-${VERSION}-sources.jar"
+          sign_and_upload "build/libs/sshj-plugin-${VERSION}-javadoc.jar" "sshj-plugin-${VERSION}-javadoc.jar"
+          sign_and_upload "build/publications/sshj-plugin/pom-default.xml" "sshj-plugin-${VERSION}.pom"
+        env:
+          SIGNING_KEY_B64: ${{ secrets.SIGNING_KEY_B64 }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          PKGCLD_WRITE_TOKEN: ${{ secrets.PKGCLD_WRITE_TOKEN }}
