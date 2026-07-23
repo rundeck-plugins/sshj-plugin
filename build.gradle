@@ -59,7 +59,6 @@ configurations{
 dependencies {
     pluginLibs libs.sshj
     pluginLibs libs.asnOne
-    pluginLibs libs.eddsa
     pluginLibs libs.bundles.bouncycastle
     pluginLibs libs.expectitCore
 

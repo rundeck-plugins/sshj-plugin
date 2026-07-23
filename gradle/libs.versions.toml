@@ -1,7 +1,6 @@
 [versions]
 sshj = "0.40.0"
 asnOne = "0.6.0"
-eddsa = "0.3.0"
 bouncycastle = "1.85"
 expectit = "0.9.0"
 commonsIo = "2.22.0"
@@ -19,7 +18,6 @@ commonsLang3 = "3.20.0"
 [libraries]
 sshj = { group = "com.hierynomus", name = "sshj", version.ref = "sshj" }
 asnOne = { group = "com.hierynomus", name = "asn-one", version.ref = "asnOne" }
-eddsa = { group = "net.i2p.crypto", name = "eddsa", version.ref = "eddsa" }
 bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 bcprov = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 expectitCore = { group = "net.sf.expectit", name = "expectit-core", version.ref = "expectit" }
