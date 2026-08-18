@@ -1,7 +1,13 @@
 [versions]
 sshj = "0.40.0"
 asnOne = "0.6.0"
-bouncycastle = "1.85.2"
+# bcprov and bcpkix don't always cut releases in lockstep -- bcprov-jdk18on
+# has shipped 1.85.2 but bcpkix-jdk18on's latest is still 1.85 (confirmed
+# against Maven Central's metadata), so these must be tracked independently
+# rather than sharing one version, or a routine bump to one breaks resolution
+# of the other. See rundeck-plugins/sshj-plugin#154.
+bcprovVersion = "1.85.2"
+bcpkixVersion = "1.85"
 expectit = "0.9.0"
 commonsIo = "2.22.0"
 rundeckCore = "6.1.0-20260803"
@@ -18,8 +24,8 @@ commonsLang3 = "3.20.0"
 [libraries]
 sshj = { group = "com.hierynomus", name = "sshj", version.ref = "sshj" }
 asnOne = { group = "com.hierynomus", name = "asn-one", version.ref = "asnOne" }
-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
-bcprov = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
+bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bcpkixVersion" }
+bcprov = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bcprovVersion" }
 expectitCore = { group = "net.sf.expectit", name = "expectit-core", version.ref = "expectit" }
 commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
 rundeckCore = { group = "org.rundeck", name = "rundeck-core", version.ref = "rundeckCore" }
