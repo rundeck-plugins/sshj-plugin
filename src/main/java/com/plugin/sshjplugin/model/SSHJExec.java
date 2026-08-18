@@ -84,14 +84,14 @@ public class SSHJExec extends SSHJBase implements SSHJEnvironments {
                         pluginLogger.log(3, "["+getPluginName()+"] Failed to set SSH environment variable: " + entry.getKey() + 
                                           " for host: " + getHostname() + ". Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (e.getCause() != null) {
-                            pluginLogger.log(2, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
+                            pluginLogger.log(3, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
                         }
                     } catch (TransportException e) {
                         failureCount++;
                         pluginLogger.log(3, "["+getPluginName()+"] Failed to set SSH environment variable: " + entry.getKey() + 
                                           " for host: " + getHostname() + ". TransportException: " + e.getClass().getSimpleName() + ": " + e.getMessage());
                         if (e.getCause() != null) {
-                            pluginLogger.log(2, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
+                            pluginLogger.log(3, "["+getPluginName()+"] Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
                         }
                     }
                 }
