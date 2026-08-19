@@ -57,8 +57,15 @@ configurations{
 }
 
 dependencies {
-    pluginLibs libs.sshj
-    pluginLibs libs.asnOne
+    // slf4j-api is provided by the Rundeck host at runtime; excluding it here keeps
+    // sshj/asn-one from bundling their own copy, which otherwise shadows the host's
+    // binding and trips SLF4J's "no providers found" NOP warning (see #70).
+    pluginLibs(libs.sshj) {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    pluginLibs(libs.asnOne) {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
     pluginLibs libs.bundles.bouncycastle
     pluginLibs libs.expectitCore
 
