@@ -1,4 +1,4 @@
-FROM node:24.20.0
+FROM node:24.21.0
 
 RUN  apt-get update && apt-get upgrade -y -qq && \
      apt-get install -y -qq --no-install-recommends wget git curl jq
