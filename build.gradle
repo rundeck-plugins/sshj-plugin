@@ -118,7 +118,7 @@ jar {
 test {
     useJUnitPlatform()
     
-    // Java 17+ module access for cglib/Spock mocking
+    // Spock's byte-buddy mock maker needs these opens to mock classes
     jvmArgs = [
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '--add-opens=java.base/java.util=ALL-UNNAMED',
