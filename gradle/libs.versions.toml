@@ -7,10 +7,10 @@ asnOne = "0.6.0"
 # rather than sharing one version, or a routine bump to one breaks resolution
 # of the other. See rundeck-plugins/sshj-plugin#154.
 bcprovVersion = "1.85.2"
-bcpkixVersion = "1.85"
+bcpkixVersion = "1.86"
 expectit = "0.9.0"
 commonsIo = "2.22.0"
-rundeckCore = "6.1.0-20260803"
+rundeckCore = "6.2.1-20260909"
 slf4j = "2.0.19"
 junit = "4.13.2"
 groovy = "4.0.33"
