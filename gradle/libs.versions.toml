@@ -1,5 +1,5 @@
 [versions]
-sshj = "0.40.0"
+sshj = "0.41.0"
 asnOne = "0.6.0"
 # bcprov and bcpkix don't always cut releases in lockstep -- bcprov-jdk18on
 # has shipped 1.85.2 but bcpkix-jdk18on's latest is still 1.85 (confirmed
