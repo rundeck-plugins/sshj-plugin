@@ -183,10 +183,10 @@ public class SSHJFileCopierPlugin extends BaseFileCopier implements MultiFileCop
                     StepFailureReason.ConfigurationFailure, e);
         }
 
-        final SSHClient client = createSshClient();
-        scp.connect(client);
-
+        SSHClient client = null;
         try {
+            client = createSshClient();
+            scp.connect(client);
             scp.execute(client);
         } catch (Exception e) {
             throw new FileCopierException("Configuration error: " + e.getMessage(),
@@ -200,13 +200,16 @@ public class SSHJFileCopierPlugin extends BaseFileCopier implements MultiFileCop
                     );
                 }
             }
-        }
-
-        try {
-            client.disconnect();
-            client.close();
-        } catch (IOException iex) {
-            throw new SSHJBuilder.BuilderException(iex);
+            if (null != client) {
+                try {
+                    client.disconnect();
+                    client.close();
+                } catch (IOException iex) {
+                    // Log cleanup errors instead of throwing to avoid masking original exception
+                    logger.log(Constants.WARN_LEVEL, "[sshj-scp] Error closing SSH connection: " +
+                        iex.getMessage());
+                }
+            }
         }
 
         return remotefile;
@@ -237,21 +240,25 @@ public class SSHJFileCopierPlugin extends BaseFileCopier implements MultiFileCop
                     StepFailureReason.ConfigurationFailure, e);
         }
 
-        final SSHClient client = createSshClient();
-        scp.connect(client);
-
+        SSHClient client = null;
         try {
+            client = createSshClient();
+            scp.connect(client);
             scp.execute(client);
         } catch (Exception e) {
             throw new FileCopierException("Configuration error: " + e.getMessage(),
                     StepFailureReason.ConfigurationFailure, e);
-        }
-
-        try {
-            client.disconnect();
-            client.close();
-        } catch (IOException iex) {
-            throw new SSHJBuilder.BuilderException(iex);
+        } finally {
+            if (null != client) {
+                try {
+                    client.disconnect();
+                    client.close();
+                } catch (IOException iex) {
+                    // Log cleanup errors instead of throwing to avoid masking original exception
+                    logger.log(Constants.WARN_LEVEL, "[sshj-scp] Error closing SSH connection: " +
+                        iex.getMessage());
+                }
+            }
         }
 
         ArrayList<String> ret = new ArrayList<>();
